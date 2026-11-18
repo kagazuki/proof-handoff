@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' https://bsc-dataseed.bnbchain.org; img-src 'self' data:; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <title>Proof Handoff | File receipts</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#workbench">Skip to file and receipt tools</a>
+  <div class="page">
+    <header>
+      <div class="mast"><span>File receipt book</span><span>BNB Smart Chain <b>/</b> 56</span></div>
+      <h1>Proof Handoff<span aria-hidden="true">.</span></h1>
+      <p>Record a file’s fingerprint. Let its recipient check the exact file and sign the receipt.</p>
+    </header>
+    <noscript>Enable JavaScript to check a file or look up a receipt.</noscript>
+    <main id="workbench">
+      <section class="paper file-sheet" aria-labelledby="file-title">
+        <div class="sheet-head"><h2 id="file-title">File check</h2><span class="notation">SHA-256</span></div>
+        <p>Choose the file you’re handing over or verifying. Its contents stay on this device.</p>
+        <label class="file-picker" id="drop-zone">
+          <input type="file" id="file" aria-describedby="file-state">
+          <span class="file-icon" aria-hidden="true"></span>
+          <span><strong>Choose a file</strong><small>or drop it here</small></span>
+        </label>
+        <p id="file-state" class="message" role="status">No file selected.</p>
+        <div class="digest-block">
+          <div class="row"><h3>File fingerprint</h3><button class="link" type="button" id="copy-digest" hidden>Copy digest</button></div>
+          <code id="digest">Choose a file to calculate its digest.</code>
+          <span id="digest-copy-state" role="status"></span>
+        </div>
+        <details class="compare">
+          <summary>Compare with a known digest</summary>
+          <label for="expected">Expected SHA-256 digest</label>
+          <input id="expected" type="text" spellcheck="false" autocomplete="off" placeholder="64 hexadecimal characters">
+          <p id="compare-state" class="message" role="status">Paste a digest to compare it locally.</p>
+        </details>
+      </section>
+      <section class="paper desk" aria-labelledby="desk-title">
+        <div class="sheet-head"><h2 id="desk-title">Receipt desk</h2><span class="notation">On-chain</span></div>
+        <div class="modes" role="group" aria-label="Receipt action">
+          <button id="new-mode" type="button" aria-pressed="true" aria-controls="new-pane">New handoff</button>
+          <button id="find-mode" type="button" aria-pressed="false" aria-controls="find-pane">Find receipt</button>
+        </div>
+        <div id="new-pane">
+          <label for="recipient">Recipient address</label>
+          <input id="recipient" type="text" placeholder="0x…" autocomplete="off" spellcheck="false" aria-describedby="create-hint">
+          <p id="create-hint" class="message">Both parties need an Agent ID to open a handoff.</p>
+          <button class="primary" id="create" type="button" disabled>Review handoff</button>
+        </div>
+        <form id="find-pane" hidden>
+          <label for="receipt-id">Receipt ID</label>
+          <div class="lookup-row">
+            <input id="receipt-id" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="Receipt number">
+            <button type="submit" class="secondary" id="lookup" disabled>Load receipt</button>
+          </div>
+          <p id="lookup-state" class="message" role="status">Enter the ID shared by the sender.</p>
+          <article id="record" hidden>
+            <div class="row"><h3 id="record-title">Receipt</h3><span class="stamp" id="record-state"></span></div>
+            <dl id="record-details"></dl>
+            <p id="match" class="message" role="status"></p>
+            <div class="actions" id="record-actions">
+              <button class="primary" id="accept" type="button" disabled>Review acceptance</button>
+              <button class="link" id="cancel" type="button" disabled>Review cancellation</button>
+            </div>
+          </article>
+        </form>
+        <p class="public-note">Both addresses and the digest are public. Someone who can guess a small or predictable file can hash a copy and identify it.</p>
+        <aside class="deployment">
+          <h3 id="deployment-title">Checking deployment…</h3>
+          <p id="deployment-state" role="status">Reading the BSC contract configuration.</p>
+          <button id="retry" type="button" class="link" hidden>Retry connection</button>
+        </aside>
+      </section>
+    </main>
+    <section id="transaction" class="paper result" aria-labelledby="tx-title" hidden>
+      <h2 id="tx-title">Transaction</h2>
+      <p id="tx-state" role="status"></p>
+      <a id="tx-link" target="_blank" rel="noopener noreferrer">View transaction on BscScan</a>
+      <button id="check-tx" type="button" class="secondary">Check confirmation</button>
+    </section>
+    <footer><span>Handoff note</span><span>Share the file privately, along with its receipt ID.</span></footer>
+  </div>
+  <dialog id="review" aria-labelledby="review-title">
+    <div class="dialog-head"><h2 id="review-title">Review transaction</h2><button class="link" id="close-review" type="button" autofocus>Close</button></div>
+    <p id="review-description"></p>
+    <dl id="review-details"></dl>
+    <details id="baw">
+      <summary>Copy fields for Binance Agentic Wallet</summary>
+      <p>Set BAW to BSC (56). Copy these fields, check the signing account and gas fee, then confirm in BAW. For a new handoff, the mined transaction’s Created event contains the receipt ID.</p>
+      <div id="baw-fields"></div>
+      <p id="baw-status" role="status"></p>
+    </details>
+    <p id="wallet-state" class="message" role="status"></p>
+    <button class="primary" id="wallet-action" type="button">Connect browser wallet</button>
+  </dialog>
+</body>
+</html>
