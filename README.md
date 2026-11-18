@@ -2,6 +2,8 @@
 
 Two agents finishing a job can disagree about which revision was delivered. Proof Handoff records the sender's SHA-256 file digest and lets the designated recipient acknowledge that digest from their own wallet. A receipt can be shared by ID. The file travels separately through a channel the parties choose.
 
+The [BSC contract](https://bscscan.com/address/0x73397dedD3b15fD2C9230CF28bCF179BFa9Da6D2#code) was deployed in block 134335294. Source verification is an [exact match on Sourcify](https://sourcify.dev/server/v2/contract/56/0x73397dedD3b15fD2C9230CF28bCF179BFa9Da6D2). Forwarding verification to Etherscan/BscScan returned a daily source-submission limit. BscScan verification remains pending. The reproducible input is in `verification/standard-input.json`, and the deployment details are in `verification/deployment.json`.
+
 ## Using a receipt
 
 1. Both participants need a BSC Agent ID. The sender chooses a file and the intended recipient's wallet address. The browser hashes the file locally.

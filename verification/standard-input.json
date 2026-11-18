@@ -1,0 +1,24 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/ProofHandoff.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.30;\n\ninterface IAgentId {\n    function balanceOf(address holder) external view returns (uint256);\n}\n\n/// A receipt records both parties' attestations to one file digest.\ncontract ProofHandoff {\n    IAgentId public constant agentId = IAgentId(0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F);\n\n    enum State { Missing, Pending, Accepted, Cancelled }\n    struct Receipt {\n        address sender;\n        uint64 openedAt;\n        State state;\n        address recipient;\n        uint64 closedAt;\n        bytes32 digest;\n    }\n\n    uint256 public count;\n    mapping(uint256 => Receipt) private receipts;\n\n    error InvalidParties();\n    error EmptyDigest();\n    error AgentIdRequired(address account);\n    error UnknownReceipt();\n    error NotPending();\n    error WrongParty();\n    error DigestMismatch();\n\n    event Created(uint256 indexed id, address indexed sender, address indexed recipient, bytes32 digest);\n    event Accepted(uint256 indexed id);\n    event Cancelled(uint256 indexed id);\n\n    function create(address recipient, bytes32 digest) external returns (uint256 id) {\n        if (recipient == address(0) || recipient == msg.sender) revert InvalidParties();\n        if (digest == bytes32(0)) revert EmptyDigest();\n        requireId(msg.sender);\n        requireId(recipient);\n        id = ++count;\n        receipts[id] = Receipt(msg.sender, uint64(block.timestamp), State.Pending, recipient, 0, digest);\n        emit Created(id, msg.sender, recipient, digest);\n    }\n\n    function accept(uint256 id, bytes32 digest) external {\n        Receipt storage r = pending(id);\n        if (msg.sender != r.recipient) revert WrongParty();\n        if (digest != r.digest) revert DigestMismatch();\n        requireId(msg.sender);\n        r.state = State.Accepted;\n        r.closedAt = uint64(block.timestamp);\n        emit Accepted(id);\n    }\n\n    function cancel(uint256 id) external {\n        Receipt storage r = pending(id);\n        if (msg.sender != r.sender) revert WrongParty();\n        r.state = State.Cancelled;\n        r.closedAt = uint64(block.timestamp);\n        emit Cancelled(id);\n    }\n\n    function get(uint256 id) external view returns (\n        address sender, address recipient, bytes32 digest, uint64 openedAt, uint64 closedAt, State state\n    ) {\n        Receipt storage r = receipts[id];\n        if (r.state == State.Missing) revert UnknownReceipt();\n        return (r.sender, r.recipient, r.digest, r.openedAt, r.closedAt, r.state);\n    }\n\n    function pending(uint256 id) private view returns (Receipt storage r) {\n        r = receipts[id];\n        if (r.state == State.Missing) revert UnknownReceipt();\n        if (r.state != State.Pending) revert NotPending();\n    }\n\n    function requireId(address account) private view {\n        if (agentId.balanceOf(account) == 0) revert AgentIdRequired(account);\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "paris",
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode.object",
+          "evm.deployedBytecode.object"
+        ]
+      }
+    }
+  }
+}

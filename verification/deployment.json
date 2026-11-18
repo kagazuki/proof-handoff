@@ -1,0 +1,15 @@
+{
+  "chainId": 56,
+  "address": "0x73397dedD3b15fD2C9230CF28bCF179BFa9Da6D2",
+  "txHash": "0x8b452f6e14a5207f2e755483718f730f662f253582369475f9f12bee74596956",
+  "block": 134335294,
+  "gasUsed": 471128,
+  "gasPriceGwei": "0.09769251",
+  "feeBNB": "0.00004602567685128",
+  "compiler": "v0.8.30+commit.73712a01",
+  "contractIdentifier": "contracts/ProofHandoff.sol:ProofHandoff",
+  "sourcify": "exact_match",
+  "sourcifyVerificationId": "f86a7f43-d1d3-4cc5-95f9-44eb01da5b52",
+  "bscscan": "pending",
+  "bscscanRelayError": "Daily limit of 500 source code submissions reached"
+}
